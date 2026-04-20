@@ -1,66 +1,62 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from "next/link";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  
+  if (session) {
+    redirect("/dashboard");
+  }
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      textAlign: 'center',
+      padding: '20px'
+    }}>
+      <div className="glass-panel" style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '3rem', marginBottom: '1rem', background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', WebkitBackgroundClip: 'text' }}>FitSync</h1>
+        <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
+          Unify your workout tracking and nutrition planning in one seamless experience.
+        </p>
+        
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+          <Link href="/login">
+            <button className="btn-primary">Sign In to Dashboard</button>
+          </Link>
+          <Link href="/register">
+            <button className="btn-secondary">Create Account</button>
+          </Link>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+        gap: '24px',
+        width: '100%',
+        maxWidth: '1000px',
+        marginTop: '60px'
+      }}>
+        <div className="glass-panel">
+          <h3>Workout Tracking</h3>
+          <p>Plan routines and calculate absolute load via our easy-to-use interface.</p>
         </div>
-      </main>
-    </div>
+        <div className="glass-panel">
+          <h3>Nutrition Sync</h3>
+          <p>Calculate your TDEE and map out your daily caloric goals.</p>
+        </div>
+        <div className="glass-panel">
+          <h3>Progress Analytics</h3>
+          <p>Watch your numbers go up mathematically over time.</p>
+        </div>
+      </div>
+    </main>
   );
 }

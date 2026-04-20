@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id              String         @id @default(cuid())
+  email           String         @unique
+  password        String
+  role            String         @default("USER") // "USER", "ADMIN", "TRAINER"
+  // Core physical attributes
+  gender          String?        // "MALE", "FEMALE"
+  height          Float?
+  weight          Float?
+  age             Int?
+  activityLevel   String?
+
+  // Extended Profile
+  name            String?
+  bio             String?
+  picture         String?        // URL to avatar
+  healthIssues    String?        // Free text for existing illnesses/injuries
+  foodPreferences String?        // e.g., "vegan, allergy-nuts"
+  dailyRoutine    String?        // Lifestyle overview
+  workProfile     String?        // Sedentary vs Active job
+  
+  // Relations
+  workouts        Workout[]
+  nutritionLogs   Nutrition[]
+  healthLogs      DailyHealthLog[]
+}
+
+model Exercise {
+  id             String           @id @default(cuid())
+  name           String
+  targetMuscle   String?
+  description    String?
+  workoutDetails WorkoutDetails[]
+}
+
+model Workout {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  date      DateTime         @default(now())
+  completed Boolean          @default(false)
+  details   WorkoutDetails[]
+}
+
+model WorkoutDetails {
+  id         String   @id @default(cuid())
+  workoutId  String
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  sets       Int
+  reps       Int
+  weight     Float
+}
+
+model Nutrition {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date             DateTime @default(now())
+  dailyCalories    Float    @default(0) // Goal
+  consumedCalories Float    @default(0) // Actual consumed
+  waterIntake      Float    @default(0) // Water consumed in Liters or Oz
+}
+
+model DailyHealthLog {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date             DateTime @default(now())
+  sleepHours       Float?
+  steps            Int?
+  caloriesBurned   Float?   // General daily burn, excluding strict gym workouts
+}
